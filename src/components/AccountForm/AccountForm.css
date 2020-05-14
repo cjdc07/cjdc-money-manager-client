@@ -1,0 +1,8 @@
+.color-picker {
+  width: 24px;
+  height: 24px;
+}
+
+.self-no-shrink {
+  flex: 0 0 auto;
+}

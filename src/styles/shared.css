@@ -1,0 +1,31 @@
+.mt-auto {
+  margin-top: auto;
+}
+
+/* .bg-green {
+  background-color: #00915A;
+} */
+
+.min-w-100 {
+  min-width: 100%;
+}
+
+.min-w-90 {
+  min-width: 90%;
+}
+
+.top--8 {
+  top: -8rem;
+}
+
+.h-80 {
+  height: 80%;
+}
+
+.h6 {
+  height: 26rem;
+}
+
+.max-h4 {
+  max-height: 8rem;
+}

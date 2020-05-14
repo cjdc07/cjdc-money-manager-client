@@ -1,0 +1,31 @@
+/* .break-word {
+  word-wrap: break-word;
+}
+
+.min-vh-80 {
+  min-height: 80vh;
+} */
+
+/* 
+For consistent image width and height
+.thumbnail {
+  max-height: 52vw;
+  min-height: 52vw;
+  object-fit: cover;
+}
+
+@media screen and (min-width: 480px) {
+  .thumbnail {
+    max-height: 36vw;
+    min-height: 36vw;
+    object-fit: cover;
+  }
+}
+
+@media screen and (min-width: 960px) {
+  .thumbnail {
+    max-height: 20vw;
+    min-height: 20vw;
+    object-fit: cover;
+  }
+} */
