@@ -7,7 +7,7 @@ function NavigationBar({ location }) {
   const { pathname } = location;
 
   return (
-    <div className="flex justify-around fixed br2 bottom-0 w-100 pa3 bg-black">
+    <div className="flex justify-around fixed bottom-0 w-100 pa3 bg-black">
       <Link className={`f4 link ${ pathname === '/accounts' ? 'blue' : 'white' }`} to="/accounts">
         <FontAwesomeIcon icon={faReceipt}/>
       </Link>
