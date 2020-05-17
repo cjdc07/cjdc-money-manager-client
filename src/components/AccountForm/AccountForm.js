@@ -135,8 +135,8 @@ function AccountForm({account, close, onCompleted}) {
   const onSubmit = (event) => {
     event.preventDefault();
     if (authToken && validator.current.allValid()) {
+      setFormLoading(true);
       if (account) {
-        setFormLoading(true);
         // TODO: Add confirmation dialog telling it will add to income / expense
         updateAccount({ variables: { id: account.id, name, balance: parseFloat(balance), color }});
       } else {
