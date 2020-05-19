@@ -13,6 +13,9 @@ function Login({ history, onLogin })  {
   const validator = useRef(new SimpleReactValidator({autoForceUpdate: {forceUpdate: forceUpdate}}));
   const [ email, setEmail ] = useState('');
   const [ password, setPassword ] = useState('');
+  const [ formLoading, setFormLoading ] = useState(false);
+  const [ errorMessage, setErrorMessage ] = useState('');
+
   const [ loginMutation ] = useMutation(
     LOGIN_MUTATION,
     {
@@ -21,17 +24,19 @@ function Login({ history, onLogin })  {
         const { token } = login;
         localStorage.setItem(AUTH_TOKEN, token);
         onLogin(true);
+        setFormLoading(false);
         history.push({ pathname: '/accounts' });
       },
       onError: (error) => {
-        // TODO: Add error handling
-        console.log(error);
+        setFormLoading(false);
+        setErrorMessage(error.message);
       }
     }
   );
 
   return (
     <div className="flex flex-column h-100 justify-center items-center ph3 center w-50-ns">
+      <p className="red">{errorMessage}</p>
       <div className="flex flex-column w-100">
         <FormInputText
           id="email"
@@ -51,9 +56,11 @@ function Login({ history, onLogin })  {
           type={'password'}
         />
         <button
-          className="w-100 bw0 pa2 mb3 white bg-green"
+          disabled={formLoading}
+          className={`w-100 bw0 pa2 mb3 white ${formLoading ? 'bg-light-gray' : 'bg-green'}`}
           onClick={() => {
             if (validator.current.allValid()) {
+              setFormLoading(true);
               loginMutation()
             } else {
               validator.current.showMessages();
