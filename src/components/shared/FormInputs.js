@@ -33,7 +33,27 @@ export function FormInputTextArea({ id, value, onChange, placeholder, label, val
   );
 }
 
-export function FormInputSelect({ id, value, onChange, label, data, validator }) {
+export function FormInputSelect({ id, value, onChange, label, data, validator, disabled }) {
+  return (
+    <Fragment>
+      <FieldContainer id={id} label={label}>
+        <div className="flex flex-column w-100 h-auto mb1 pa2 ba br2 b--black-40">
+          <div className="flex justify-between">
+            <div className="flex w-100">
+              <select className="w-100 bw0 bb" defaultValue={value} onChange={onChange} disabled={disabled}>
+                <option value="" default>-- Select Account -- </option>
+                {data.map((item) => (<option key={item.id} value={item.id}>{item.name}</option>))}
+              </select>
+            </div>
+          </div>
+        </div>
+        <span className="red f6">{validator && validator.message(id, value, 'required')}</span>
+      </FieldContainer>
+    </Fragment>
+  )
+}
+
+export function FormInputSelectCategory({ id, value, onChange, label, data, validator }) {
   const [ showDropdown, setShowDropdown ] = useState(false);
   const [ selections, setSelections ] = useState(data);
   const [ selected, setSelected ] = useState(value? value : '');
@@ -42,7 +62,7 @@ export function FormInputSelect({ id, value, onChange, label, data, validator })
     setSelections(data.filter((selection) => selection.value.toLowerCase().includes(filter.toLowerCase())));
   };
 
-  // TODO: use Category structure here
+  // TODO: Fix implementation. category id should be used as value
 
   return (
     <Fragment>
@@ -72,13 +92,16 @@ export function FormInputSelect({ id, value, onChange, label, data, validator })
               />
             </div>
             <div
-              className="w-10"
+              className="w-10 pr1"
               onClick={() => {
                 setShowDropdown(!showDropdown);
                 filterSelection(selected);
               }}
             >
-              {showDropdown ? <FontAwesomeIcon icon={faCaretUp}/> : <FontAwesomeIcon icon={faCaretDown}/>}
+              {showDropdown
+                ? <FontAwesomeIcon icon={faCaretUp} className="fr"/>
+                : <FontAwesomeIcon icon={faCaretDown} className="fr"/>
+              }
             </div>
           </div>
           <div className={`${showDropdown ? 'db' : 'dn'} max-h4 overflow-y-auto`}>
@@ -116,7 +139,7 @@ export function FormInputSelect({ id, value, onChange, label, data, validator })
   );
 }
 
-export function FormInputText({ id, value, onChange, placeholder, label, validator, type = 'text' }) {
+export function FormInputText({ id, value, onChange, placeholder, label, validator, type = 'text', disabled }) {
   return (
     <Fragment>
       <FieldContainer id={id} label={label}>
@@ -128,6 +151,7 @@ export function FormInputText({ id, value, onChange, placeholder, label, validat
             onChange={onChange}
             type={type}
             placeholder={placeholder}
+            disabled={disabled}
           />
         </div>
         <span className="red f6">{validator && validator.message(id, value, 'required')}</span>
@@ -136,7 +160,7 @@ export function FormInputText({ id, value, onChange, placeholder, label, validat
   );
 }
 
-export function FormInputCurrency({ id, value, onChange, placeholder, label, validator }) {
+export function FormInputCurrency({ id, value, onChange, placeholder, label, validator, disabled }) {
   return (
     <Fragment>
       <FieldContainer id={id} label={label}>
@@ -149,6 +173,7 @@ export function FormInputCurrency({ id, value, onChange, placeholder, label, val
             onChange={onChange}
             type="text"
             placeholder={placeholder}
+            disabled={disabled}
           />
         </div>
         <span className="red f6">{validator && validator.message(id, value, 'required|numeric')}</span>
