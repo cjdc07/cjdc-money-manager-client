@@ -1,6 +1,6 @@
 import React from 'react';
-import { withRouter } from 'react-router';
 import { AUTH_TOKEN } from '../../constants';
+import { withRouter } from 'react-router';
 import { withApollo } from 'react-apollo';
 
 function Profile({ history, onLogin, client }) {

@@ -7,8 +7,8 @@ import { faCheck, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { useMutation } from '@apollo/react-hooks';
 
 import FormContainer from '../shared/FormContainer';
-import { ACCOUNT_LIST, INCOME_LIST } from '../../resolvers/Query';
-import { ACCOUNTS_PER_PAGE, AUTH_TOKEN, BG_COLORS, ORDER_BY_ASC } from '../../constants';
+import { ACCOUNT_LIST, TRANSACTION_LIST } from '../../resolvers/Query';
+import { ACCOUNTS_PER_PAGE, AUTH_TOKEN, BG_COLORS, TRANSACTION_TYPE, ORDER_BY_ASC } from '../../constants';
 import { CREATE_ACCOUNT, DELETE_ACCOUNT, UPDATE_ACCOUNT } from '../../resolvers/Mutation';
 import { FormInputCurrency, FormInputText } from '../shared/FormInputs';
 
@@ -26,13 +26,9 @@ function AccountForm({account, close, onCompleted}) {
     CREATE_ACCOUNT,
     {
       update: (cache, { data: { createAccount } }) => {
-        const first = ACCOUNTS_PER_PAGE;
-        const skip = 0;
-        const orderBy = ORDER_BY_ASC;
-
         const data = cache.readQuery({
           query: ACCOUNT_LIST,
-          variables: { first, skip, orderBy },
+          variables: { filter: '', first: ACCOUNTS_PER_PAGE, skip: 0, orderBy: ORDER_BY_ASC }
         });
         
         data.accountList.accounts.push(createAccount);
@@ -42,7 +38,7 @@ function AccountForm({account, close, onCompleted}) {
         cache.writeQuery({
           query: ACCOUNT_LIST,
           data,
-          variables: { first, skip, orderBy },
+          variables: { filter: '', first: ACCOUNTS_PER_PAGE, skip: 0, orderBy: ORDER_BY_ASC }
         });
       },
       onCompleted: ({createAccount}) => {
@@ -58,13 +54,9 @@ function AccountForm({account, close, onCompleted}) {
     {
       update: (cache, { data: { updateAccount } }) => {
         // Only for updating 'total' account
-        const first = ACCOUNTS_PER_PAGE;
-        const skip = 0;
-        const orderBy = ORDER_BY_ASC;
-
         const data = cache.readQuery({
           query: ACCOUNT_LIST,
-          variables: { first, skip, orderBy },
+          variables: { filter: '', first: ACCOUNTS_PER_PAGE, skip: 0, orderBy: ORDER_BY_ASC }
         });
 
         data.accountList.total = data.accountList.accounts.reduce((total, account) => total += account.balance, 0);
@@ -72,15 +64,15 @@ function AccountForm({account, close, onCompleted}) {
         cache.writeQuery({
           query: ACCOUNT_LIST,
           data,
-          variables: { first, skip, orderBy },
+          variables: { filter: '', first: ACCOUNTS_PER_PAGE, skip: 0, orderBy: ORDER_BY_ASC }
         });
 
         onCompleted(updateAccount);
       },
       refetchQueries: ({ data: { updateAccount } }) => {
         return [{
-          query: INCOME_LIST,
-          variables: { accountId: updateAccount.id },
+          query: TRANSACTION_LIST,
+          variables: { account: account.id, filter: '', skip: 0, first: 0, type: TRANSACTION_TYPE.INCOME, orderBy: null }, // TODO: Use filter, skip, and orderBy
         }];
       },
       onCompleted: () => {
@@ -95,13 +87,9 @@ function AccountForm({account, close, onCompleted}) {
     {
       update: (cache, { data: { deleteAccount } }) => {
         // Only for updating 'total' account
-        const first = ACCOUNTS_PER_PAGE;
-        const skip = 0;
-        const orderBy = ORDER_BY_ASC;
-
         const data = cache.readQuery({
           query: ACCOUNT_LIST,
-          variables: { first, skip, orderBy },
+          variables: { filter: '', first: ACCOUNTS_PER_PAGE, skip: 0, orderBy: ORDER_BY_ASC }
         });
 
         const index = data.accountList.accounts.indexOf(
@@ -113,7 +101,7 @@ function AccountForm({account, close, onCompleted}) {
         cache.writeQuery({
           query: ACCOUNT_LIST,
           data,
-          variables: { first, skip, orderBy },
+          variables: { filter: '', first: ACCOUNTS_PER_PAGE, skip: 0, orderBy: ORDER_BY_ASC }
         });
 
         // Will assign next account as selected account
@@ -121,8 +109,8 @@ function AccountForm({account, close, onCompleted}) {
       },
       refetchQueries: ({ data: { deleteAccount } }) => {
         return [{
-          query: INCOME_LIST,
-          variables: { accountId: deleteAccount.id },
+          query: TRANSACTION_LIST,
+          variables: { account: account.id, filter: '', skip: 0, first: 0, type: TRANSACTION_TYPE.INCOME, orderBy: null }, // TODO: Use filter, skip, and orderBy
         }];
       },
       onCompleted: () => {

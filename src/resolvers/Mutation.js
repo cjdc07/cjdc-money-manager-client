@@ -58,114 +58,103 @@ export const DELETE_ACCOUNT = gql`
   }
 `;
 
-export const CREATE_INCOME = gql`
-  mutation IncomeMutation($description: String!, $payer: String!, $category: String!, $amount: Float!, $notes: String, $account: ID!) {
-    createIncome(description: $description, payer: $payer, category: $category, amount: $amount, notes: $notes, account: $account) {
+export const CREATE_TRANSACTION = gql`
+  mutation TransactionMutation(
+    $account: ID!,
+    $amount: Float!,
+    $category: String!,
+    $description: String!,
+    $from: String!,
+    $notes: String,
+    $to: String!,
+    $type: TransactionType!,
+  ) {
+    createTransaction(
+      account: $account,
+      amount: $amount,
+      category: $category,
+      description: $description,
+      from: $from,
+      notes: $notes,
+      to: $to,
+      type: $type,
+    ) {
       id
-      payer
-      category {
-        id
-        value
-      }
-      amount
-      description
-      notes
       account {
         id
         name
       }
-      createdBy {
-        id
-        name
-      }
-    }
-  }
-`;
-
-export const UPDATE_INCOME = gql`
-  mutation IncomeMutation($id: ID!, $description: String!, $payer: String!, $category: String!, $amount: Float!, $notes: String, $account: ID!) {
-    updateIncome(id: $id, description: $description, payer: $payer, category: $category, amount: $amount, notes: $notes, account: $account) {
-      id
-      payer
+      amount
       category {
         id
         value
       }
-      amount
       description
+      from
       notes
-      account {
-        id
-        name
-      }
+      to
+      type
       createdBy {
         id
         name
       }
+      createdAt
+      updatedAt
     }
   }
 `;
 
-export const DELETE_INCOME = gql`
-  mutation IncomeMutation($id: ID!) {
-    deleteIncome(id: $id) {
+export const UPDATE_TRANSACTION = gql`
+  mutation TransactionMutation(
+    $id: ID!,
+    $account: ID!
+    $amount: Float!,
+    $category: String!,
+    $description: String!,
+    $from: String!,
+    $notes: String,
+    $to: String!,
+    $type: TransactionType!
+  ) {
+    updateTransaction(
+      id: $id,
+      account: $account,
+      amount: $amount,
+      category: $category,
+      description: $description,
+      from: $from,
+      notes: $notes,
+      to: $to,
+      type: $type,
+    ) {
       id
+      account {
+        id
+        name
+      }
       amount
-    }
-  }
-`;
-
-export const CREATE_EXPENSE = gql`
-  mutation ExpenseMutation($description: String!, $recipient: String!, $category: String!, $amount: Float!, $notes: String, $account: ID!) {
-    createExpense(description: $description, recipient: $recipient, category: $category, amount: $amount, notes: $notes, account: $account) {
-      id
-      recipient
       category {
         id
         value
       }
-      amount
       description
+      from
       notes
-      account {
-        id
-        name
-      }
+      to
+      type
       createdBy {
         id
         name
       }
+      createdAt
+      updatedAt
     }
   }
 `;
 
-export const UPDATE_EXPENSE = gql`
-  mutation ExpenseMutation($id: ID!, $description: String!, $recipient: String!, $category: String!, $amount: Float!, $notes: String, $account: ID!) {
-    updateExpense(id: $id, description: $description, recipient: $recipient, category: $category, amount: $amount, notes: $notes, account: $account) {
-      id
-      recipient
-      category {
-        id
-        value
-      }
-      amount
-      description
-      notes
-      account {
-        id
-        name
-      }
-      createdBy {
-        id
-        name
-      }
-    }
-  }
-`;
-
-export const DELETE_EXPENSE = gql`
-  mutation ExpenseMutation($id: ID!) {
-    deleteExpense(id: $id) {
+export const DELETE_TRANSACTION = gql`
+  mutation TransactionMutation($id: ID!) {
+    deleteTransaction(id: $id) {
       id
       amount
     }

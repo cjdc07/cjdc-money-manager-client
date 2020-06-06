@@ -4,10 +4,9 @@ import React, { Fragment, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
-import ExpenseForm from '../ExpenseForm/ExpenseForm';
-import IncomeForm from '../IncomeForm/IncomeForm';
+import TransactionForm from '../TransactionForm/TransactionForm';
 import Modal from '../Modal/Modal';
-import TransferForm from '../TransferForm/TransferForm';
+import { TRANSACTION_TYPE } from '../../constants';
 
 function AccountActions({account}) {
   const [ showModal, setShowModal ] = useState(false);
@@ -35,7 +34,7 @@ function AccountActions({account}) {
                 onClick={() => {
                   setShowModal(true);
                   setModalTitle(`Income`);
-                  setFormComponent(<IncomeForm account={account} close={closeModal}/>);
+                  setFormComponent(<TransactionForm account={account} close={closeModal} type={TRANSACTION_TYPE.INCOME}/>);
                   setShowMenu(false);
                 }}
               >
@@ -46,7 +45,7 @@ function AccountActions({account}) {
                 onClick={() => {
                   setShowModal(true);
                   setModalTitle(`Expense`);
-                  setFormComponent(<ExpenseForm account={account} close={closeModal}/>);
+                  setFormComponent(<TransactionForm account={account} close={closeModal} type={TRANSACTION_TYPE.EXPENSE}/>);
                   setShowMenu(false);
                 }}
               >
@@ -57,7 +56,7 @@ function AccountActions({account}) {
                 onClick={() => {
                   setShowModal(true);
                   setModalTitle(`${account.name} Transfer`);
-                  setFormComponent(<TransferForm />);
+                  setFormComponent(<TransactionForm account={account} close={closeModal} type={TRANSACTION_TYPE.TRANSFER}/>);
                   setShowMenu(false);
                 }}
               >

@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 export const ACCOUNT_LIST = gql`
-  query AccountListQuery($first: Int, $skip: Int, $orderBy: AccountOrderByInput){
-    accountList(first: $first, skip: $skip, orderBy: $orderBy) {
+  query AccountListQuery($filter: String, $skip: Int, $first: Int, $orderBy: AccountOrderByInput){
+    accountList(filter: $filter, first: $first, skip: $skip, orderBy: $orderBy) {
       accounts {
         id
         name
@@ -21,39 +21,23 @@ export const ACCOUNT_LIST = gql`
   }
 `;
 
-export const INCOME_LIST = gql`
-  query incomeList($accountId: String){
-    incomeList(accountId: $accountId) {
-      incomes {
+export const TRANSACTION_LIST = gql`
+  query transactionList($filter: String, $account: ID!, $type: TransactionType, $skip: Int, $first: Int, $orderBy: TransactionOrderByInput){
+    transactionList(filter: $filter, account: $account, type: $type, skip: $skip, first: $first, orderBy: $orderBy) {
+      transactions {
         id
-        payer
+        amount
+        notes
         category {
           id
           value
         }
-        amount
-        notes
         description
-      },
-      count,
-      total
-    }
-  }
-`;
-
-export const EXPENSE_LIST = gql`
-  query expenseList($accountId: String){
-    expenseList(accountId: $accountId) {
-      expenses {
-        id
-        recipient
-        category {
-          id
-          value
-        }
-        amount
-        notes
-        description
+        from
+        to
+        type
+        createdAt
+        updatedAt
       },
       count,
       total
@@ -62,12 +46,11 @@ export const EXPENSE_LIST = gql`
 `;
 
 export const CATEGORY_LIST = gql`
-  query categoryList($transactionType: TransactionType!){
-    categoryList(transactionType: $transactionType) {
+  query categoryList {
+    categoryList {
       categories {
         id
         value
-        transactionType
       },
       count
     }

@@ -6,19 +6,18 @@ import { withRouter } from 'react-router';
 
 import AccountActions from '../AccountActions/AccountActions';
 import AccountList from '../AccountList/AccountList';
-import ExpenseList from '../ExpenseList/ExpenseList';
-import IncomeList from '../IncomeList/IncomeList';
+import TransactionList from '../TransactionList/TransactionList';
 import { ACCOUNT_LIST } from '../../resolvers/Query';
 import { ACCOUNTS_PER_PAGE, ORDER_BY_ASC, TRANSACTION_TYPE } from '../../constants';
 
 function Account() {
   const [ account, setAccount ] = useState(null);
-  const [ transactionComponent, setTransactionComponent ] = useState(TRANSACTION_TYPE.INCOME);
+  const [ transactionType, setTransactionType ] = useState(TRANSACTION_TYPE.INCOME);
 
   const { loading, error, data } = useQuery(
     ACCOUNT_LIST,
     {
-      variables: { first: ACCOUNTS_PER_PAGE, skip: 0, orderBy: ORDER_BY_ASC },
+      variables: { filter: '', first: ACCOUNTS_PER_PAGE, skip: 0, orderBy: ORDER_BY_ASC },
       onCompleted: (data) => setAccount(data.accountList.accounts[0]),
     }
   );
@@ -35,21 +34,27 @@ function Account() {
           <div className="h-100">
             <div className="pl2 f4">
               <span
-                className={transactionComponent === TRANSACTION_TYPE.INCOME ? 'b' : 'gray'}
-                onClick={() => setTransactionComponent(TRANSACTION_TYPE.INCOME)}
+                className={transactionType === TRANSACTION_TYPE.INCOME ? 'b' : 'gray'}
+                onClick={() => setTransactionType(TRANSACTION_TYPE.INCOME)}
               >
                 Income
               </span>
               <span className="gray"> | </span>
               <span
-                className={transactionComponent === TRANSACTION_TYPE.EXPENSE ? 'b' : 'gray'}
-                onClick={() => setTransactionComponent(TRANSACTION_TYPE.EXPENSE)}
+                className={transactionType === TRANSACTION_TYPE.EXPENSE ? 'b' : 'gray'}
+                onClick={() => setTransactionType(TRANSACTION_TYPE.EXPENSE)}
               >
-                Expense
+                Expenses
+              </span>
+              <span className="gray"> | </span>
+              <span
+                className={transactionType === TRANSACTION_TYPE.TRANSFER ? 'b' : 'gray'}
+                onClick={() => setTransactionType(TRANSACTION_TYPE.TRANSFER)}
+              >
+                Transfers
               </span>
             </div>
-            {transactionComponent === TRANSACTION_TYPE.INCOME && <IncomeList account={account}/>}
-            {transactionComponent === TRANSACTION_TYPE.EXPENSE && <ExpenseList account={account}/>}
+            {account && <TransactionList account={account} type={transactionType}/>}
           </div>
         )
         : (
