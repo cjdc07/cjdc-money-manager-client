@@ -32,7 +32,7 @@ function Account() {
       {data.accountList.accounts.length > 0
         ? (
           <div className="h-100">
-            <div className="pl2 f4">
+            <div className="pl2 pb2 f4">
               <span
                 className={transactionType === TRANSACTION_TYPE.INCOME ? 'b' : 'gray'}
                 onClick={() => setTransactionType(TRANSACTION_TYPE.INCOME)}

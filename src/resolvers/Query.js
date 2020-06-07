@@ -25,22 +25,25 @@ export const TRANSACTION_LIST = gql`
   query transactionList($filter: String, $account: ID!, $type: TransactionType, $skip: Int, $first: Int, $orderBy: TransactionOrderByInput){
     transactionList(filter: $filter, account: $account, type: $type, skip: $skip, first: $first, orderBy: $orderBy) {
       transactions {
-        id
-        amount
-        notes
-        category {
-          id
-          value
-        }
-        description
-        from
-        to
-        type
+        count
         createdAt
-        updatedAt
-      },
-      count,
-      total
+        total
+        transactions {
+          id
+          amount
+          notes
+          category {
+            id
+            value
+          }
+          description
+          from
+          to
+          type
+          createdAt
+          updatedAt
+        }
+      }
     }
   }
 `;
