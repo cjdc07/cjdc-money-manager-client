@@ -1,3 +1,4 @@
+import * as moment from 'moment';
 import React, { useRef, useState } from 'react';
 import SimpleReactValidator from 'simple-react-validator';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -47,11 +48,16 @@ function TransactionForm({account, close, transaction, type, client}) {
           variables: { type, account: account.id, filter: '', skip: 0, first: 0, orderBy: null }, // TODO: Use filter, skip, and orderBy
         });
 
-        data.transactionList.transactions.unshift(createTransaction);
+        const dataCopy = data.transactionList.transactions.map((groupedTransaction) => {
+          if (groupedTransaction.createdAt === moment(createTransaction.createdAt).format('Y-MM-D')) {
+            groupedTransaction.transactions.unshift(createTransaction);
+          }
+          return groupedTransaction
+        });
 
         cache.writeQuery({
           query: TRANSACTION_LIST,
-          data,
+          data: dataCopy,
           variables: { type, account: account.id, filter: '', skip: 0, first: 0, orderBy: null }, // TODO: Use filter, skip, and orderBy
         });
 
@@ -61,11 +67,16 @@ function TransactionForm({account, close, transaction, type, client}) {
             variables: { type, account: createTransaction.to, filter: '', skip: 0, first: 0, orderBy: null }, // TODO: Use filter, skip, and orderBy
           });
   
-          toAccountData.transactionList.transactions.unshift(createTransaction);
+          const toAccountDataCopy = toAccountData.transactionList.transactions.map((groupedTransaction) => {
+            if (groupedTransaction.createdAt === moment(createTransaction.createdAt).format('Y-MM-D')) {
+              groupedTransaction.transactions.unshift(createTransaction);
+            }
+            return groupedTransaction
+          });
   
           cache.writeQuery({
             query: TRANSACTION_LIST,
-            data: toAccountData,
+            data: toAccountDataCopy,
             variables: { type, account: createTransaction.to, filter: '', skip: 0, first: 0, orderBy: null }, // TODO: Use filter, skip, and orderBy
           });
         }

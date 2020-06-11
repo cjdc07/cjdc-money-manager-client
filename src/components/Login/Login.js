@@ -1,5 +1,6 @@
 import React, {useState, useRef } from 'react';
 import SimpleReactValidator from 'simple-react-validator';
+import { GoogleLogin } from 'react-google-login';
 import { Link } from 'react-router-dom';
 import { useMutation } from 'react-apollo';
 import { withRouter } from 'react-router';
@@ -11,7 +12,7 @@ import { FormInputText } from '../shared/FormInputs';
 function Login({ history, onLogin })  {
   const [, forceUpdate] = useState();
   const validator = useRef(new SimpleReactValidator({autoForceUpdate: {forceUpdate: forceUpdate}}));
-  const [ email, setEmail ] = useState('');
+  const [ username, setUsername ] = useState('');
   const [ password, setPassword ] = useState('');
   const [ formLoading, setFormLoading ] = useState(false);
   const [ errorMessage, setErrorMessage ] = useState('');
@@ -19,7 +20,6 @@ function Login({ history, onLogin })  {
   const [ loginMutation ] = useMutation(
     LOGIN_MUTATION,
     {
-      variables: { email, password },
       onCompleted: ({ login }) => {
         const { token } = login;
         localStorage.setItem(AUTH_TOKEN, token);
@@ -34,16 +34,38 @@ function Login({ history, onLogin })  {
     }
   );
 
+  const login = (response) => {
+    const { tokenId } = response;
+
+    // TODO: login with username and pass
+
+    // TODO: tokenId should be in authorization header
+    loginMutation({
+      variables: { oAuthToken: tokenId },
+    });
+  }
+
   return (
     <div className="flex flex-column h-100 justify-center items-center ph3 center w-50-ns">
       <p className="red">{errorMessage}</p>
       <div className="flex flex-column w-100">
+        <div className="pb3 mb3 bb b--light-gray">
+          <GoogleLogin
+            className="w-100"
+            clientId={process.env.REACT_APP_GMAIL_CLIENT_ID}
+            buttonText="Login"
+            onSuccess={login}
+            onFailure={login}
+            isSignedIn={true}
+            cookiePolicy={'single_host_origin'}
+          />
+        </div>
         <FormInputText
-          id="email"
+          id="username"
           className="mb3"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          placeholder="Email"
+          value={username}
+          onChange={e => setUsername(e.target.value)}
+          placeholder="Username"
           validator={validator.current}
         />
         <FormInputText

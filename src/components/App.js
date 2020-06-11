@@ -22,7 +22,7 @@ function App() {
     <div className="fixed h-100 w-100 center sans-serif">
       <Switch>
         <Route exact path='/' render={() => logged ? <Redirect to='/accounts'/> : <Redirect to='/login'/>} />
-        <Route exact path='/login' render={() => <Login onLogin={(logged) => setLogged(logged)}/>} />
+        <Route exact path='/login' render={() => logged ? <Redirect to='/accounts'/> : <Login onLogin={(logged) => setLogged(logged)}/>} />
         <Route exact path='/accounts' render={() => logged ? <Account /> : <Redirect to='/login'/>} /> 
         <Route exact path='/profile' render={() => logged ? <Profile onLogin={(logged) => setLogged(logged)}/> : <Redirect to='/login'/>} /> 
         <Route exact path='/signup' render={() => <Signup onLogin={(logged) => setLogged(logged)}/>} />

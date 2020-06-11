@@ -29,9 +29,9 @@ function TransactionList({ account, client, type }) {
   if (loading) return 'Loading...';
   if (error) return `Error! ${error.message}`;
 
-  const { transactions, /*count, total*/ } = data.transactionList;
+  const { transactions } = data.transactionList;
 
-  let {accountList: { accounts }} = client.cache.readQuery({
+  let { accountList: { accounts } } = client.cache.readQuery({
     query: ACCOUNT_LIST,
     variables: { filter: '', first: ACCOUNTS_PER_PAGE, skip: 0, orderBy: ORDER_BY_ASC }, // TODO: Use filter, skip, and orderBy
   });
@@ -39,7 +39,7 @@ function TransactionList({ account, client, type }) {
   return (
     <Fragment>
       <div className="h-100 overflow-y-auto ph2">
-        {transactions.map(({ count, createdAt, total, transactions}) => {
+        {transactions.map(({ count, createdAt, total, transactions}, index) => {
           const list = transactions.map((transaction) => (
             <div
               key={transaction.id}
@@ -75,7 +75,7 @@ function TransactionList({ account, client, type }) {
           ));
 
           return (
-            <Fragment>
+            <Fragment key={`${createdAt}-${index}`}>
               <p className="b mt2">{moment(createdAt).format('MMMM D, YYYY')}</p>
               {list}
             </Fragment>

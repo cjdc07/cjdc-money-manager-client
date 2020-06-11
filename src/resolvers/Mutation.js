@@ -9,8 +9,8 @@ export const SIGNUP_MUTATION = gql`
 `
 
 export const LOGIN_MUTATION = gql`
-  mutation LoginMutation($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
+  mutation LoginMutation($oAuthToken: String!) {
+    login(oAuthToken: $oAuthToken) {
       token
     }
   }
