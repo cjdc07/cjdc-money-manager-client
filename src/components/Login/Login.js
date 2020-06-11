@@ -56,7 +56,6 @@ function Login({ history, onLogin })  {
             buttonText="Login"
             onSuccess={login}
             onFailure={login}
-            isSignedIn={true}
             cookiePolicy={'single_host_origin'}
           />
         </div>
