@@ -111,7 +111,14 @@ function TransactionForm({account, close, transaction, type, client}) {
         if (type === TRANSACTION_TYPE.TRANSFER) {
           queries.push({
             query: TRANSACTION_LIST,
-            variables: { type, account: deleteTransaction.to, filter: '', skip: 0, first: 0, orderBy: null },
+            variables: {
+              type,
+              account: account.id === deleteTransaction.to ? deleteTransaction.from : deleteTransaction.to,
+              filter: '',
+              skip: 0,
+              first: 0,
+              orderBy: null
+            },
           });
         }
 

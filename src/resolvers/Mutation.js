@@ -158,6 +158,7 @@ export const DELETE_TRANSACTION = gql`
       id
       amount
       to
+      from
     }
   }
 `;
