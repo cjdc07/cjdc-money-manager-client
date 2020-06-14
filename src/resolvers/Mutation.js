@@ -157,6 +157,7 @@ export const DELETE_TRANSACTION = gql`
     deleteTransaction(id: $id) {
       id
       amount
+      to
     }
   }
 `;

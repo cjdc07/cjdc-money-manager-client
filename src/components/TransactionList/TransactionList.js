@@ -15,7 +15,7 @@ import { withApollo } from 'react-apollo';
 function TransactionList({ account, client, type }) {
   const [ showModal, setShowModal ] = useState(false);
   const [ modalTitle, setModalTitle ] = useState(false);
-  const [ selected, setSelected ] = useState(false);
+  const [ selected, setSelected ] = useState(null);
 
   const { loading, error, data } = useQuery(
     TRANSACTION_LIST,

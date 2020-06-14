@@ -1,4 +1,3 @@
-import * as moment from 'moment';
 import React, { useRef, useState } from 'react';
 import SimpleReactValidator from 'simple-react-validator';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -41,55 +40,32 @@ function TransactionForm({account, close, transaction, type, client}) {
 
   const [ createTransaction ] = useMutation(
     CREATE_TRANSACTION,
+    // TODO: Implement cache using update instead
     {
-      update: (cache, { data: { createTransaction } }) => {
-        const data = cache.readQuery({
-          query: TRANSACTION_LIST,
-          variables: { type, account: account.id, filter: '', skip: 0, first: 0, orderBy: null }, // TODO: Use filter, skip, and orderBy
-        });
-
-        const dataCopy = data.transactionList.transactions.map((groupedTransaction) => {
-          if (groupedTransaction.createdAt === moment(createTransaction.createdAt).format('Y-MM-D')) {
-            groupedTransaction.transactions.unshift(createTransaction);
-          }
-          return groupedTransaction
-        });
-
-        cache.writeQuery({
-          query: TRANSACTION_LIST,
-          data: dataCopy,
-          variables: { type, account: account.id, filter: '', skip: 0, first: 0, orderBy: null }, // TODO: Use filter, skip, and orderBy
-        });
+      refetchQueries: ({ data: { createTransaction } }) => {
+        const queries = [
+          {
+            query: ACCOUNT_LIST,
+            variables: { filter: '', first: ACCOUNTS_PER_PAGE, skip: 0, orderBy: ORDER_BY_ASC }
+          },
+          {
+            query: CATEGORY_LIST,
+          },
+          {
+            query: TRANSACTION_LIST,
+            variables: { type, account: account.id, filter: '', skip: 0, first: 0, orderBy: null },
+          },
+        ];
 
         if (type === TRANSACTION_TYPE.TRANSFER) {
-          const toAccountData = cache.readQuery({
+          queries.push({
             query: TRANSACTION_LIST,
-            variables: { type, account: createTransaction.to, filter: '', skip: 0, first: 0, orderBy: null }, // TODO: Use filter, skip, and orderBy
-          });
-  
-          const toAccountDataCopy = toAccountData.transactionList.transactions.map((groupedTransaction) => {
-            if (groupedTransaction.createdAt === moment(createTransaction.createdAt).format('Y-MM-D')) {
-              groupedTransaction.transactions.unshift(createTransaction);
-            }
-            return groupedTransaction
-          });
-  
-          cache.writeQuery({
-            query: TRANSACTION_LIST,
-            data: toAccountDataCopy,
-            variables: { type, account: createTransaction.to, filter: '', skip: 0, first: 0, orderBy: null }, // TODO: Use filter, skip, and orderBy
+            variables: { type, account: createTransaction.to, filter: '', skip: 0, first: 0, orderBy: null },
           });
         }
+
+        return queries;
       },
-      refetchQueries: [
-        {
-          query: ACCOUNT_LIST,
-          variables: { filter: '', first: ACCOUNTS_PER_PAGE, skip: 0, orderBy: ORDER_BY_ASC }
-        },
-        {
-          query: CATEGORY_LIST, // TODO: Update cache instead of doing this
-        },
-      ],
       onCompleted: () => {
         setFormLoading(false);
         close();
@@ -119,28 +95,28 @@ function TransactionForm({account, close, transaction, type, client}) {
   const [ deleteTransaction ] = useMutation(
     DELETE_TRANSACTION,
     {
-      update: (cache, { data: { deleteTransaction } }) => {
-        let data = cache.readQuery({
-          query: TRANSACTION_LIST,
-          variables: { type, account: account.id, filter: '', skip: 0, first: 0, orderBy: null }, // TODO: Use filter, skip, and orderBy
-        });
+      // TODO: Implement cache using update instead
+      refetchQueries: ({ data: { deleteTransaction } }) => {
+        const queries = [
+          {
+            query: ACCOUNT_LIST,
+            variables: { filter: '', first: ACCOUNTS_PER_PAGE, skip: 0, orderBy: ORDER_BY_ASC }
+          },
+          {
+            query: TRANSACTION_LIST,
+            variables: { type, account: account.id, filter: '', skip: 0, first: 0, orderBy: null },
+          },
+        ];
 
-        const index = data.transactionList.transactions.indexOf(
-          data.transactionList.transactions.find(transaction => transaction.id === deleteTransaction.id)
-        );
-        
-        data.transactionList.transactions.splice(index, 1);
+        if (type === TRANSACTION_TYPE.TRANSFER) {
+          queries.push({
+            query: TRANSACTION_LIST,
+            variables: { type, account: deleteTransaction.to, filter: '', skip: 0, first: 0, orderBy: null },
+          });
+        }
 
-        cache.writeQuery({
-          query: TRANSACTION_LIST,
-          data: data,
-          variables: { type, account: account.id, filter: '', skip: 0, first: 0, orderBy: null }, // TODO: Use filter, skip, and orderBy
-        });
+        return queries;
       },
-      refetchQueries: [{
-        query: ACCOUNT_LIST,
-        variables: { filter: '', first: ACCOUNTS_PER_PAGE, skip: 0, orderBy: ORDER_BY_ASC }
-      }],
       onCompleted: () => {
         setFormLoading(false);
         close();
@@ -148,7 +124,7 @@ function TransactionForm({account, close, transaction, type, client}) {
     }
   );
 
-  const {loading, error, data} = useQuery(CATEGORY_LIST);
+  const { loading, error, data } = useQuery(CATEGORY_LIST);
   let {accountList: { accounts }} = client.cache.readQuery({
     query: ACCOUNT_LIST,
     variables: { filter: '', first: ACCOUNTS_PER_PAGE, skip: 0, orderBy: ORDER_BY_ASC }, // TODO: Use filter, skip, and orderBy
