@@ -16,7 +16,6 @@ export const ACCOUNT_LIST = gql`
         }
       }
       count
-      total
     }
   }
 `;

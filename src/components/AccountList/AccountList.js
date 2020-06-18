@@ -11,10 +11,9 @@ import { currencyFormatter } from '../../utils';
 
 function AccountList({onSelect, data}) {
   const getAccountsToRender = data => {
-    const rankedAccounts = data.accountList.accounts.slice();
+    const accounts = data.accountList.accounts.slice();
     // TODO: Sort by amount / createdAt / updatedAt
-    // rankedClassrooms.sort((l1, l2) => l2.votes.length - l1.votes.length);
-    return rankedAccounts;
+    return accounts;
   }
 
   const accountsToRender = getAccountsToRender(data);
@@ -30,16 +29,14 @@ function AccountList({onSelect, data}) {
     >
       <div className="flex flex-row justify-between items-center">
         <p className="f6 mv1 break-word white">{account.name}</p>
-        {account.id !== 'total'
-          && <FontAwesomeIcon
-              icon={faEdit}
-              className="white"
-              onClick={() => {
-                setSelected(account);
-                setShowModal(true);
-              }}
-            />
-        }
+          <FontAwesomeIcon
+            icon={faEdit}
+            className="white"
+            onClick={() => {
+              setSelected(account);
+              setShowModal(true);
+            }}
+          />
       </div>
       <p className="f6 mv1 break-word white b">{currencyFormatter.format(account.balance)}</p>
     </div>
@@ -48,13 +45,6 @@ function AccountList({onSelect, data}) {
   const closeModal = () => {
     setShowModal(false);
   }
-
-  // const accountTotal = {
-  //   id: 'total',
-  //   name: 'All Accounts',
-  //   balance: data.accountList.total,
-  //   color: 'black'
-  // };
 
   let reactSwipeEl;
 
@@ -74,7 +64,6 @@ function AccountList({onSelect, data}) {
           }}
           ref={el => (reactSwipeEl = el)}
         >
-          {/* { displayAccount(accountTotal) } */}
           { accountsToRender.map((account) => displayAccount(account)) }
           <div
             className={`flex items-center justify-center pa2 h3 gray br2 w-40 w-30-ns w-25-m w-20-l ba b--dashed bw1 b--light-gray hover-border-blue`}
