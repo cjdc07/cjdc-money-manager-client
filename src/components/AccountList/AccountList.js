@@ -3,7 +3,7 @@ import './AccountList.css'
 import React, { Fragment, useState } from 'react';
 import ReactSwipe from 'react-swipe';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEdit, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faCircle, faEdit, faPlus } from '@fortawesome/free-solid-svg-icons'
 
 import AccountForm from '../AccountForm/AccountForm';
 import Modal from '../Modal/Modal';
@@ -88,9 +88,22 @@ function AccountList({onSelect, data}) {
             return (
               <div
                 key={account.id}
-                className={`h1 w-100 mr1 br2 ${selected && (account.id === selected.id && 'ba bw1 b--dark-gray')} bg-${account.color}`}
+                className={`flex justify-center items-center h1 w-100 mr1 br2 bg-${account.color}`}
                 onClick={() => reactSwipeEl.slide(index)}
-              />
+              >
+                {selected
+                  && (account.id === selected.id
+                  && <FontAwesomeIcon
+                      icon={faCircle}
+                      className="light-gray f6"
+                      onClick={() => {
+                        setSelected(account);
+                        setShowModal(true);
+                      }}
+                    />
+                  )
+                }
+              </div>
             )
           })}
           {accountsToRender.length > 0
