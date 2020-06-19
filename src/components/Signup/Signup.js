@@ -11,8 +11,10 @@ function Signup({ history, onLogin })  {
   const [, forceUpdate] = useState();
   const validator = useRef(new SimpleReactValidator({autoForceUpdate: {forceUpdate: forceUpdate}}));
   const [ name, setName ] = useState('');
-  const [ email, setEmail ] = useState('');
+  const [ username, setUsername ] = useState('');
   const [ password, setPassword ] = useState('');
+  const [ formLoading, setFormLoading ] = useState(false);
+  const [ errorMessage, setErrorMessage ] = useState('');
 
   const [ signupMutation ] = useMutation(
     SIGNUP_MUTATION,
@@ -21,14 +23,19 @@ function Signup({ history, onLogin })  {
         const { token } = signup;
         localStorage.setItem(AUTH_TOKEN, token);
         onLogin(true);
+        setFormLoading(false);
         history.push({ pathname: '/accounts' });
       },
-      variables: { name, email, password },
+      onError: (error) => {
+        setFormLoading(false);
+        setErrorMessage(error.message);
+      }
     }
   );
 
   return (
     <div className="flex flex-column h-100 justify-center items-center ph3 center w-50-ns">
+      <p className="red">{errorMessage}</p>
       <div className="flex flex-column w-100">
         <FormInputText
           id="name"
@@ -40,13 +47,13 @@ function Signup({ history, onLogin })  {
           type='text'
         />
         <FormInputText
-          id="email"
+          id="username"
           className="mb3"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          placeholder="Email"
+          value={username}
+          onChange={e => setUsername(e.target.value)}
+          placeholder="Username"
           validator={validator.current}
-          type='email'
+          type='text'
         />
         <FormInputText
           id="password"
@@ -58,10 +65,12 @@ function Signup({ history, onLogin })  {
           type='password'
         />
         <button
-          className="w-100 bw0 pa2 mb3 white bg-green"
+          disabled={formLoading}
+          className={`w-100 bw0 pa2 mb3 white ${formLoading ? 'bg-light-gray' : 'bg-green'}`}
           onClick={() => {
             if (validator.current.allValid()) {
-              signupMutation()
+              setFormLoading(true);
+              signupMutation({variables: { name, username, password }})
             } else {
               validator.current.showMessages();
               forceUpdate(1);

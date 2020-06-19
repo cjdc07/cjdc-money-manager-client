@@ -6,7 +6,7 @@ import { useMutation } from 'react-apollo';
 import { withRouter } from 'react-router';
 
 import { AUTH_TOKEN } from '../../constants';
-import { LOGIN_MUTATION } from '../../resolvers/Mutation';
+import { GMAIL_LOGIN_MUTATION, LOGIN_MUTATION } from '../../resolvers/Mutation';
 import { FormInputText } from '../shared/FormInputs';
 
 function Login({ history, onLogin })  {
@@ -17,15 +17,33 @@ function Login({ history, onLogin })  {
   const [ formLoading, setFormLoading ] = useState(false);
   const [ errorMessage, setErrorMessage ] = useState('');
 
+  const handleLogin = (token) => {
+    localStorage.setItem(AUTH_TOKEN, token);
+    onLogin(true);
+    setFormLoading(false);
+    history.push({ pathname: '/accounts' });
+  }
+
+  const [ gmailLoginMutation ] = useMutation(
+    GMAIL_LOGIN_MUTATION,
+    {
+      onCompleted: ({ gmailLogin }) => {
+        const { token } = gmailLogin;
+        handleLogin(token);
+      },
+      onError: (error) => {
+        setFormLoading(false);
+        setErrorMessage(error.message);
+      }
+    }
+  )
+
   const [ loginMutation ] = useMutation(
     LOGIN_MUTATION,
     {
       onCompleted: ({ login }) => {
         const { token } = login;
-        localStorage.setItem(AUTH_TOKEN, token);
-        onLogin(true);
-        setFormLoading(false);
-        history.push({ pathname: '/accounts' });
+        handleLogin(token);
       },
       onError: (error) => {
         setFormLoading(false);
@@ -33,17 +51,6 @@ function Login({ history, onLogin })  {
       }
     }
   );
-
-  const login = (response) => {
-    const { tokenId } = response;
-
-    // TODO: login with username and pass
-
-    // TODO: tokenId should be in authorization header
-    loginMutation({
-      variables: { oAuthToken: tokenId },
-    });
-  }
 
   return (
     <div className="flex flex-column h-100 justify-center items-center ph3 center w-50-ns">
@@ -54,8 +61,15 @@ function Login({ history, onLogin })  {
             className="w-100"
             clientId={process.env.REACT_APP_GMAIL_CLIENT_ID}
             buttonText="Login"
-            onSuccess={login}
-            onFailure={login}
+            onSuccess={(response) => {
+              const { tokenId } = response;
+              gmailLoginMutation({
+                variables: { oAuthToken: tokenId },
+              });
+            }}
+            onFailure={(response) => {
+              console.error(response);
+            }}
             cookiePolicy={'single_host_origin'}
           />
         </div>
@@ -82,7 +96,7 @@ function Login({ history, onLogin })  {
           onClick={() => {
             if (validator.current.allValid()) {
               setFormLoading(true);
-              loginMutation()
+              loginMutation({variables: { username, password }})
             } else {
               validator.current.showMessages();
               forceUpdate(1);
