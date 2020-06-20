@@ -40,7 +40,7 @@ function TransactionForm({account, close, transaction, type, client}) {
 
   const [ createTransaction ] = useMutation(
     CREATE_TRANSACTION,
-    // TODO: Implement cache using update instead
+    // TODO: Implement cache using update instead (now, it's refetching all data from the server)
     {
       refetchQueries: ({ data: { createTransaction } }) => {
         const queries = [

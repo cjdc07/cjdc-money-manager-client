@@ -26,11 +26,20 @@ function Account() {
 
   if (error) return `Error! ${error.message}`;
 
+  if (data.accountList.accounts[0].id !== 'total-accounts') {
+    data.accountList.accounts.unshift({
+      id: 'total-accounts',
+      name: 'All Accounts',
+      balance: data.accountList.total,
+      color: 'black'
+    });
+  }
+
   return (
     <Fragment>
       <AccountList data={data} onSelect={account => setAccount(account)}/>
-      {data.accountList.accounts.length > 0
-        ? (
+      {account && account.id !== 'total-accounts'
+        && (
           <div className="h-100">
             <div className="pl2 pb2 f4">
               <span
@@ -54,12 +63,7 @@ function Account() {
                 Transfers
               </span>
             </div>
-            {account && <TransactionList account={account} type={transactionType}/>}
-          </div>
-        )
-        : (
-          <div className="tc pv5">
-            <span className="v-mid f4">Create your first account</span>
+            <TransactionList account={account} type={transactionType}/>
           </div>
         )
       }

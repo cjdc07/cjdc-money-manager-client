@@ -29,6 +29,7 @@ function AccountList({onSelect, data}) {
     >
       <div className="flex flex-row justify-between items-center">
         <p className="f6 mv1 break-word white">{account.name}</p>
+        {account.id !== 'total-accounts' &&
           <FontAwesomeIcon
             icon={faEdit}
             className="white"
@@ -37,6 +38,7 @@ function AccountList({onSelect, data}) {
               setShowModal(true);
             }}
           />
+        }
       </div>
       <p className="f6 mv1 break-word white b">{currencyFormatter.format(account.balance)}</p>
     </div>
