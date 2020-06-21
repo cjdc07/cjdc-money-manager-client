@@ -43,7 +43,7 @@ function TransactionList({ account, client, type }) {
           const list = transactions.map((transaction) => (
             <div
               key={transaction.id}
-              className="flex justify-between w-100 pv2 ph3 mb3 br2 shadow-1"
+              className="flex justify-between w-100 pv2 ph3 mb3 br2 bg-white"
               onClick={() => {
                 setShowModal(true);
                 setModalTitle(transaction.description);
@@ -52,7 +52,7 @@ function TransactionList({ account, client, type }) {
             >
               <div className="flex flex-column">
                 <span className="mb1 f6 b">{transaction.description}</span>
-                <span className="f6 gray">
+                <span className="mb1 f6 gray">
                   {transaction.type === TRANSACTION_TYPE.TRANSFER
                     ? (`${transaction.from === account.id
                         ? `${accounts.find((otherAccount) => otherAccount.id === transaction.to)?.name || 'Deleted Account'}`
@@ -60,6 +60,9 @@ function TransactionList({ account, client, type }) {
                       | ${transaction.category.value}`)
                     : (`${transaction.type === TRANSACTION_TYPE.INCOME ?  transaction.from : transaction.to} | ${transaction.category.value}`)
                   }
+                </span>
+                <span className="f6 gray">
+                  {moment(transaction.createdAt).format('h:mm a')}
                 </span>
               </div>
               <div className="flex flex-column justify-center">
