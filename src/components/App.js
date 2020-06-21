@@ -1,4 +1,3 @@
-import '../styles/App.css'
 import '../styles/shared.css'
 
 import React, { useState } from 'react';
