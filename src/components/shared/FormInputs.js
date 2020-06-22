@@ -40,7 +40,7 @@ export function FormInputSelect({ id, value, onChange, label, data, validator, d
         <div className="flex flex-column w-100 h-auto mb1 pa2 ba br2 b--black-40">
           <div className="flex justify-between">
             <div className="flex w-100">
-              <select className="w-100 bw0 bb" defaultValue={value} onChange={onChange} disabled={disabled}>
+              <select className="w-100 bw0 bb" value={value} onChange={onChange} disabled={disabled}>
                 <option value="" default>-- Select Account -- </option>
                 {data.map((item) => (<option key={item.id} value={item.id}>{item.name}</option>))}
               </select>

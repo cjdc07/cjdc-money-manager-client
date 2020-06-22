@@ -5,9 +5,11 @@ import React, { Fragment, useState } from 'react';
 
 import ActionSheet from '../ActionSheet/ActionSheet';
 import TransactionForm from '../TransactionForm/TransactionForm';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { TRANSACTION_LIST, ACCOUNT_LIST } from '../../resolvers/Query';
 import { TRANSACTION_TYPE, ACCOUNTS_PER_PAGE, ORDER_BY_ASC } from '../../constants';
 import { currencyFormatter } from '../../utils';
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { useQuery } from 'react-apollo';
 import { withApollo } from 'react-apollo';
 
@@ -24,7 +26,10 @@ function TransactionList({ account, client, type }) {
     }
   );
 
-  const closeActionSheet = () => setShowActionSheet(false);
+  const closeActionSheet = () => {
+    setSelected(null);
+    setShowActionSheet(false)
+  };
 
   if (loading) return 'Loading...';
   if (error) return `Error! ${error.message}`;
@@ -86,8 +91,21 @@ function TransactionList({ account, client, type }) {
         })}
         <div className="bottom-spacing">{/* Extra space  */}</div>
       </div>
+      <div className="fixed bottom-2 w-100 pv4 ph3">
+        <button
+          className="absolute right-1 top--2 bw0 white btn-circle z-1 bg-black"
+          onClick={() => {
+            const title = type.toLowerCase();
+            setActionSheetTitle(`New ${title.charAt(0).toUpperCase() + title.substring(1)}`);
+            setShowActionSheet(true)
+          }}
+          disabled={!account}
+        >
+          <FontAwesomeIcon icon={faPlus}/>
+        </button>
+      </div>
       <ActionSheet close={closeActionSheet} title={actionSheetTitle} show={showActionSheet}>
-        <TransactionForm account={account} transaction={selected} close={closeActionSheet} type={selected?.type}/>
+        <TransactionForm account={account} transaction={selected} close={closeActionSheet} type={selected ? selected.type : type}/>
       </ActionSheet>
     </Fragment>
   );

@@ -205,7 +205,7 @@ function TransactionForm({account, close, transaction, type, client}) {
           <FormInputSelect
             id={to === account.id ? 'from' : 'to'}
             value={to === account.id ? from : to}
-            onChange={e => {setTo(e.target.value)}}
+            onChange={e => setTo(e.target.value)}
             label={to === account.id ? 'From' : 'To'}
             data={accounts.slice(1)}
             validator={validator.current}

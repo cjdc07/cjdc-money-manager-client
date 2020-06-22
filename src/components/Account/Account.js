@@ -5,7 +5,6 @@ import React, { Fragment, useState } from 'react';
 import { useQuery } from 'react-apollo';
 import { withRouter } from 'react-router';
 
-import AccountActions from '../AccountActions/AccountActions';
 import AccountList from '../AccountList/AccountList';
 import TransactionList from '../TransactionList/TransactionList';
 import { ACCOUNT_LIST } from '../../resolvers/Query';
@@ -80,7 +79,6 @@ function Account() {
           </div>
         )
       }
-      <AccountActions account={account}/>
     </Fragment>
   )
 }
