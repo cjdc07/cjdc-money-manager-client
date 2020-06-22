@@ -1,7 +1,7 @@
 import './TransactionList.css';
 
 import * as moment from 'moment';
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 
 import ActionSheet from '../ActionSheet/ActionSheet';
 import TransactionForm from '../TransactionForm/TransactionForm';
@@ -19,6 +19,12 @@ function TransactionList({ account, client, type }) {
   const [ actionSheetTitle, setActionSheetTitle ] = useState(false);
   const [ selected, setSelected ] = useState(null);
 
+  useEffect(() => {
+    if (!showActionSheet) {
+      setSelected(null);
+    }
+  }, [showActionSheet])
+
   const { loading, error, data } = useQuery(
     TRANSACTION_LIST,
     {
@@ -26,10 +32,7 @@ function TransactionList({ account, client, type }) {
     }
   );
 
-  const closeActionSheet = () => {
-    setSelected(null);
-    setShowActionSheet(false)
-  };
+  const closeActionSheet = () => setShowActionSheet(false);
 
   if (loading) return 'Loading...';
   if (error) return `Error! ${error.message}`;
