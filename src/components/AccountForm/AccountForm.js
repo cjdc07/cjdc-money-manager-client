@@ -1,6 +1,6 @@
 import './AccountForm.css';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import SimpleReactValidator from 'simple-react-validator';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheck, faTrash } from '@fortawesome/free-solid-svg-icons'
@@ -8,19 +8,24 @@ import { useMutation } from '@apollo/react-hooks';
 
 import FormContainer from '../shared/FormContainer';
 import { ACCOUNT_LIST, TRANSACTION_LIST } from '../../resolvers/Query';
-import { ACCOUNTS_PER_PAGE, AUTH_TOKEN, BG_COLORS, TRANSACTION_TYPE, ORDER_BY_ASC } from '../../constants';
+import { ACCOUNT_TOTAL_ID, ACCOUNTS_PER_PAGE, AUTH_TOKEN, BG_COLORS, TRANSACTION_TYPE, ORDER_BY_ASC } from '../../constants';
 import { CREATE_ACCOUNT, DELETE_ACCOUNT, UPDATE_ACCOUNT } from '../../resolvers/Mutation';
 import { FormInputCurrency, FormInputText } from '../shared/FormInputs';
 
-// TODO: Simplify Form to include common form and common buttons
-function AccountForm({account, close, onCompleted}) {
+function AccountForm({ account, close, onCompleted }) {
   const [, forceUpdate] = useState();
   const validator = useRef(new SimpleReactValidator({autoForceUpdate: {forceUpdate: forceUpdate}}));
-  const [ name, setName ] = useState(account ? account.name : '');
-  const [ balance, setBalance ] = useState(account ? account.balance : '');
-  const [ color, setColor ] = useState(account ? account.color : '');
+  const [ name, setName ] = useState('');
+  const [ balance, setBalance ] = useState('');
+  const [ color, setColor ] = useState('');
   const [ formLoading, setFormLoading ] = useState(false);
   const authToken = localStorage.getItem(AUTH_TOKEN);
+
+  useEffect(() => {
+    setName(account ? account.name : '');
+    setBalance(account ? account.balance : '');
+    setColor(account ? account.color : '');
+  }, [account])
 
   const [ createAccount ] = useMutation(
     CREATE_ACCOUNT,
@@ -30,11 +35,15 @@ function AccountForm({account, close, onCompleted}) {
           query: ACCOUNT_LIST,
           variables: { filter: '', first: ACCOUNTS_PER_PAGE, skip: 0, orderBy: ORDER_BY_ASC }
         });
-        
+
         data.accountList.accounts.push(createAccount);
-        data.accountList.total = data.accountList.accounts.reduce((total, account) => total += account.balance, 0);
+        data.accountList.total += createAccount.balance
         data.accountList.count += 1;
         
+        if (data.accountList.accounts.length > 0 && data.accountList.accounts[0].id === ACCOUNT_TOTAL_ID) {
+          data.accountList.accounts[0].balance = data.accountList.total;
+        }
+
         cache.writeQuery({
           query: ACCOUNT_LIST,
           data,
@@ -53,13 +62,16 @@ function AccountForm({account, close, onCompleted}) {
     UPDATE_ACCOUNT,
     {
       update: (cache, { data: { updateAccount } }) => {
-        // Only for updating 'total' account
         const data = cache.readQuery({
           query: ACCOUNT_LIST,
           variables: { filter: '', first: ACCOUNTS_PER_PAGE, skip: 0, orderBy: ORDER_BY_ASC }
         });
 
-        data.accountList.total = data.accountList.accounts.reduce((total, account) => total += account.balance, 0);
+        data.accountList.total = data.accountList.accounts.slice(1).reduce((total, account) => total += account.balance, 0);
+
+        if (data.accountList.accounts.length > 0 && data.accountList.accounts[0].id === ACCOUNT_TOTAL_ID) {
+          data.accountList.accounts[0].balance = data.accountList.total;
+        }
 
         cache.writeQuery({
           query: ACCOUNT_LIST,
@@ -72,7 +84,7 @@ function AccountForm({account, close, onCompleted}) {
       refetchQueries: ({ data: { updateAccount } }) => {
         return [{
           query: TRANSACTION_LIST,
-          variables: { account: account.id, filter: '', skip: 0, first: 0, type: TRANSACTION_TYPE.INCOME, orderBy: null }, // TODO: Use filter, skip, and orderBy
+          variables: { account: updateAccount.id, filter: '', skip: 0, first: 0, type: TRANSACTION_TYPE.INCOME, orderBy: null },
         }];
       },
       onCompleted: () => {
@@ -86,7 +98,6 @@ function AccountForm({account, close, onCompleted}) {
     DELETE_ACCOUNT,
     {
       update: (cache, { data: { deleteAccount } }) => {
-        // Only for updating 'total' account
         const data = cache.readQuery({
           query: ACCOUNT_LIST,
           variables: { filter: '', first: ACCOUNTS_PER_PAGE, skip: 0, orderBy: ORDER_BY_ASC }
@@ -95,8 +106,18 @@ function AccountForm({account, close, onCompleted}) {
         const index = data.accountList.accounts.indexOf(
           data.accountList.accounts.find(account => account.id === deleteAccount.id)
         );
-        
+
         data.accountList.accounts.splice(index, 1);
+        data.accountList.total -= deleteAccount.balance
+        data.accountList.count -= 1;
+
+        if (data.accountList.accounts.length === 1 && data.accountList.accounts[0].id === ACCOUNT_TOTAL_ID) {
+          data.accountList.accounts = [];
+        }
+
+        if (data.accountList.accounts.length > 0 && data.accountList.accounts[0].id === ACCOUNT_TOTAL_ID) {
+          data.accountList.accounts[0].balance = data.accountList.total;
+        }
 
         cache.writeQuery({
           query: ACCOUNT_LIST,
@@ -104,13 +125,13 @@ function AccountForm({account, close, onCompleted}) {
           variables: { filter: '', first: ACCOUNTS_PER_PAGE, skip: 0, orderBy: ORDER_BY_ASC }
         });
 
-        // Will assign next account as selected account
-        onCompleted(data.accountList.accounts[index]);
+        // Will assign previous account as selected account
+        onCompleted(data.accountList.accounts[index-1]);
       },
       refetchQueries: ({ data: { deleteAccount } }) => {
         return [{
           query: TRANSACTION_LIST,
-          variables: { account: account.id, filter: '', skip: 0, first: 0, type: TRANSACTION_TYPE.INCOME, orderBy: null }, // TODO: Use filter, skip, and orderBy
+          variables: { account: account.id, filter: '', skip: 0, first: 0, type: TRANSACTION_TYPE.INCOME, orderBy: null },
         }];
       },
       onCompleted: () => {

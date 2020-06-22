@@ -10,10 +10,6 @@ export const ACCOUNT_LIST = gql`
         color
         updatedAt
         createdAt
-        createdBy {
-          id
-          name
-        }
       }
       count
       total

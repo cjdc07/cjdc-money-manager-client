@@ -1,3 +1,4 @@
+export const ACCOUNT_TOTAL_ID = 'total-accounts';
 export const AUTH_TOKEN = 'auth-token';
 export const ACCOUNTS_PER_PAGE = 100;
 export const ORDER_BY_ASC = 'createdAt_DESC';

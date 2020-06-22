@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons'
 
@@ -56,7 +56,11 @@ export function FormInputSelect({ id, value, onChange, label, data, validator, d
 export function FormInputSelectCategory({ id, value, onChange, label, data, validator }) {
   const [ showDropdown, setShowDropdown ] = useState(false);
   const [ selections, setSelections ] = useState(data);
-  const [ selected, setSelected ] = useState(value? value : '');
+  const [ selected, setSelected ] = useState('');
+
+  useEffect(() => {
+    setSelected(value ? value : '');
+  }, [value])
 
   const filterSelection = (filter) => {
     setSelections(data.filter((selection) => selection.value.toLowerCase().includes(filter.toLowerCase())));

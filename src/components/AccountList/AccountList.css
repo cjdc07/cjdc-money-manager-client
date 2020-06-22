@@ -1,8 +1,3 @@
 .border-blue {
   border-color: #357edd;
 }
-
-.hover-border-blue:hover {
-  border-color:  #357edd;
-  color: #357edd;
-}

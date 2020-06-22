@@ -33,10 +33,6 @@ export const CREATE_ACCOUNT = gql`
       color
       updatedAt
       createdAt
-      createdBy {
-        id
-        name
-      }
     }
   }
 `;
@@ -50,10 +46,6 @@ export const UPDATE_ACCOUNT = gql`
       color
       updatedAt
       createdAt
-      createdBy {
-        id
-        name
-      }
     }
   }
 `;
@@ -62,6 +54,7 @@ export const DELETE_ACCOUNT = gql`
   mutation AccountMutation($id: ID!) {
     deleteAccount(id: $id) {
       id
+      balance
     }
   }
 `;
@@ -102,10 +95,6 @@ export const CREATE_TRANSACTION = gql`
       notes
       to
       type
-      createdBy {
-        id
-        name
-      }
       createdAt
       updatedAt
     }
@@ -150,10 +139,6 @@ export const UPDATE_TRANSACTION = gql`
       notes
       to
       type
-      createdBy {
-        id
-        name
-      }
       createdAt
       updatedAt
     }

@@ -3,7 +3,7 @@ import './TransactionList.css';
 import * as moment from 'moment';
 import React, { Fragment, useState } from 'react';
 
-import Modal from '../Modal/Modal';
+import ActionSheet from '../ActionSheet/ActionSheet';
 import TransactionForm from '../TransactionForm/TransactionForm';
 import { TRANSACTION_LIST, ACCOUNT_LIST } from '../../resolvers/Query';
 import { TRANSACTION_TYPE, ACCOUNTS_PER_PAGE, ORDER_BY_ASC } from '../../constants';
@@ -13,8 +13,8 @@ import { withApollo } from 'react-apollo';
 
 
 function TransactionList({ account, client, type }) {
-  const [ showModal, setShowModal ] = useState(false);
-  const [ modalTitle, setModalTitle ] = useState(false);
+  const [ showActionSheet, setShowActionSheet ] = useState(false);
+  const [ actionSheetTitle, setActionSheetTitle ] = useState(false);
   const [ selected, setSelected ] = useState(null);
 
   const { loading, error, data } = useQuery(
@@ -24,7 +24,7 @@ function TransactionList({ account, client, type }) {
     }
   );
 
-  const closeModal = () => setShowModal(false);
+  const closeActionSheet = () => setShowActionSheet(false);
 
   if (loading) return 'Loading...';
   if (error) return `Error! ${error.message}`;
@@ -45,8 +45,8 @@ function TransactionList({ account, client, type }) {
               key={transaction.id}
               className="flex justify-between w-100 pv2 ph3 mb3 br2 bg-white"
               onClick={() => {
-                setShowModal(true);
-                setModalTitle(transaction.description);
+                setShowActionSheet(true);
+                setActionSheetTitle(transaction.description);
                 setSelected(transaction);
               }}
             >
@@ -86,14 +86,9 @@ function TransactionList({ account, client, type }) {
         })}
         <div className="bottom-spacing">{/* Extra space  */}</div>
       </div>
-      {showModal &&
-        <Modal
-          close={closeModal}
-          title={modalTitle}
-        >
-          <TransactionForm account={account} transaction={selected} close={closeModal} type={selected.type}/>
-        </Modal>
-      }
+      <ActionSheet close={closeActionSheet} title={actionSheetTitle} show={showActionSheet}>
+        <TransactionForm account={account} transaction={selected} close={closeActionSheet} type={selected?.type}/>
+      </ActionSheet>
     </Fragment>
   );
 }

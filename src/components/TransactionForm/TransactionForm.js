@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import SimpleReactValidator from 'simple-react-validator';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrash } from '@fortawesome/free-solid-svg-icons'
@@ -12,31 +12,40 @@ import { ACCOUNT_LIST, TRANSACTION_LIST, CATEGORY_LIST } from '../../resolvers/Q
 import { withApollo } from 'react-apollo';
 
 function TransactionForm({account, close, transaction, type, client}) {
-  let fromInitialValue = '';
-  let toInitialValue = '';
-
-  if (type === TRANSACTION_TYPE.TRANSFER) {
-    fromInitialValue = account.id;
-  }
-
-  if (type === TRANSACTION_TYPE.EXPENSE) {
-    fromInitialValue = 'Me';
-  }
-
-  if (type === TRANSACTION_TYPE.INCOME) {
-    toInitialValue = 'Me';
-  }
-
   const [, forceUpdate] = useState();
   const validator = useRef(new SimpleReactValidator({autoForceUpdate: {forceUpdate: forceUpdate}}));
-  const [ amount, setAmount ] = useState(transaction ? transaction.amount : '');
-  const [ category, setCategory ] = useState(transaction ? transaction.category.value : '');
-  const [ description, setDescription ] = useState(transaction ? transaction.description : '');
-  const [ from, setFrom ] = useState(transaction ? transaction.from : fromInitialValue);
-  const [ to, setTo ] = useState(transaction ? transaction.to : toInitialValue);
-  const [ notes, setNotes ] = useState(transaction ? transaction.notes : '');
+  const [ amount, setAmount ] = useState('');
+  const [ category, setCategory ] = useState('');
+  const [ description, setDescription ] = useState('');
+  const [ from, setFrom ] = useState('');
+  const [ to, setTo ] = useState('');
+  const [ notes, setNotes ] = useState('');
   const [ formLoading, setFormLoading ] = useState(false);
   const authToken = localStorage.getItem(AUTH_TOKEN);
+
+  useEffect(() => {
+    let fromInitialValue = '';
+    let toInitialValue = '';
+
+    if (type === TRANSACTION_TYPE.TRANSFER) {
+      fromInitialValue = account.id;
+    }
+
+    if (type === TRANSACTION_TYPE.EXPENSE) {
+      fromInitialValue = 'Me';
+    }
+
+    if (type === TRANSACTION_TYPE.INCOME) {
+      toInitialValue = 'Me';
+    }
+
+    setAmount(transaction ? transaction.amount : '');
+    setCategory(transaction ? transaction.category.value : '');
+    setDescription(transaction ? transaction.description : '');
+    setFrom(transaction ? transaction.from : fromInitialValue);
+    setTo(transaction ? transaction.to : toInitialValue);
+    setNotes(transaction ? transaction.notes : '')
+  }, [account, transaction, type])
 
   const [ createTransaction ] = useMutation(
     CREATE_TRANSACTION,
@@ -192,24 +201,38 @@ function TransactionForm({account, close, transaction, type, client}) {
         validator={validator.current}
       />
       {type === TRANSACTION_TYPE.TRANSFER 
-        ? (
+        && (
           <FormInputSelect
             id={to === account.id ? 'from' : 'to'}
             value={to === account.id ? from : to}
             onChange={e => {setTo(e.target.value)}}
             label={to === account.id ? 'From' : 'To'}
-            data={accounts}
+            data={accounts.slice(1)}
             validator={validator.current}
             disabled={to === account.id}
           />
         )
-        : (
+      }
+      {type === TRANSACTION_TYPE.INCOME
+        && (
           <FormInputText
-            id={type === TRANSACTION_TYPE.INCOME ? 'from' : 'to'}
-            value={type === TRANSACTION_TYPE.INCOME ? from : to}
-            onChange={e => type === TRANSACTION_TYPE.INCOME ? setFrom(e.target.value) : setTo(e.target.value)}
-            placeholder={type === TRANSACTION_TYPE.INCOME ? 'From' : 'To'}
-            label={type === TRANSACTION_TYPE.INCOME ? 'From' : 'To'}
+            id="from"
+            value={from}
+            onChange={e => setFrom(e.target.value)}
+            placeholder="From"
+            label="From"
+            validator={validator.current}
+          />
+        )
+      }
+      {type === TRANSACTION_TYPE.EXPENSE
+        && (
+          <FormInputText
+            id="to"
+            value={to}
+            onChange={e => setTo(e.target.value)}
+            placeholder="To"
+            label="To"
             validator={validator.current}
           />
         )

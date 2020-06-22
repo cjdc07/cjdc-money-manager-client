@@ -5,16 +5,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
 import TransactionForm from '../TransactionForm/TransactionForm';
-import Modal from '../Modal/Modal';
+import ActionSheet from '../ActionSheet/ActionSheet';
 import { TRANSACTION_TYPE } from '../../constants';
 
 function AccountActions({account}) {
-  const [ showModal, setShowModal ] = useState(false);
+  const [ showActionSheet, setShowActionSheet ] = useState(false);
   const [ showMenu, setShowMenu ] = useState(false);
-  const [ modalTitle, setModalTitle ] = useState('');
+  const [ actionSheetTitle, setActionSheetTitle ] = useState('');
   const [ formComponent, setFormComponent ] = useState(false);
 
-  const closeModal = () => setShowModal(false);
+  const closeActionSheet = () => setShowActionSheet(false);
 
   return (
     <Fragment>
@@ -32,9 +32,9 @@ function AccountActions({account}) {
               <li
                 className="mv3"
                 onClick={() => {
-                  setShowModal(true);
-                  setModalTitle(`Income`);
-                  setFormComponent(<TransactionForm account={account} close={closeModal} type={TRANSACTION_TYPE.INCOME}/>);
+                  setShowActionSheet(true);
+                  setActionSheetTitle(`Income`);
+                  setFormComponent(<TransactionForm account={account} close={closeActionSheet} type={TRANSACTION_TYPE.INCOME}/>);
                   setShowMenu(false);
                 }}
               >
@@ -43,9 +43,9 @@ function AccountActions({account}) {
               <li
                 className="mv3"
                 onClick={() => {
-                  setShowModal(true);
-                  setModalTitle(`Expense`);
-                  setFormComponent(<TransactionForm account={account} close={closeModal} type={TRANSACTION_TYPE.EXPENSE}/>);
+                  setShowActionSheet(true);
+                  setActionSheetTitle(`Expense`);
+                  setFormComponent(<TransactionForm account={account} close={closeActionSheet} type={TRANSACTION_TYPE.EXPENSE}/>);
                   setShowMenu(false);
                 }}
               >
@@ -54,9 +54,9 @@ function AccountActions({account}) {
               <li
                 className="mv3"
                 onClick={() => {
-                  setShowModal(true);
-                  setModalTitle(`${account.name} Transfer`);
-                  setFormComponent(<TransactionForm account={account} close={closeModal} type={TRANSACTION_TYPE.TRANSFER}/>);
+                  setShowActionSheet(true);
+                  setActionSheetTitle(`${account.name} Transfer`);
+                  setFormComponent(<TransactionForm account={account} close={closeActionSheet} type={TRANSACTION_TYPE.TRANSFER}/>);
                   setShowMenu(false);
                 }}
               >
@@ -66,7 +66,7 @@ function AccountActions({account}) {
           </div>
         )}
       </div>
-      {showModal && <Modal close={closeModal} title={modalTitle}>{formComponent}</Modal>}
+      <ActionSheet close={closeActionSheet} title={actionSheetTitle} show={showActionSheet}>{formComponent}</ActionSheet>
     </Fragment>   
   )
 }

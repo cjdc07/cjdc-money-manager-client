@@ -1,0 +1,23 @@
+.action-sheet {
+  transition: 0.5s ease;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  width: 100%;
+  padding-bottom: 1rem;
+  background-color: #fff;
+  border-radius: .5rem;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  box-shadow: 0 0 8px 2px rgba(0,0,0,.2)
+}
+
+.action-sheet--show {
+  max-height: 90%;
+  bottom: 0;
+}
+
+.action-sheet--hide {
+  max-height: 0;
+  bottom: -10%;
+}
