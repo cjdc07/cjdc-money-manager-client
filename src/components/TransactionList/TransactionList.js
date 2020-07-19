@@ -2,6 +2,7 @@ import './TransactionList.css';
 
 import * as moment from 'moment';
 import React, { Fragment, useState, useEffect } from 'react';
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 
 import ActionSheet from '../ActionSheet/ActionSheet';
 import TransactionForm from '../TransactionForm/TransactionForm';
@@ -34,7 +35,15 @@ function TransactionList({ account, client, type }) {
 
   const closeActionSheet = () => setShowActionSheet(false);
 
-  if (loading) return 'Loading...';
+  if (loading) {
+    return (
+      <SkeletonTheme color="#D3D3D3" highlightColor="#C0C0C0">
+        <div className="h3 pa2">
+          <Skeleton width="100%" height="100%" count={10} className="mv2"/>
+        </div>
+      </SkeletonTheme>
+    );
+  }
   if (error) return `Error! ${error.message}`;
 
   const { transactions } = data.transactionList;

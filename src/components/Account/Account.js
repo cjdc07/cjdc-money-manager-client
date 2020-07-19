@@ -2,6 +2,7 @@ import './Account.css';
 
 import * as moment from 'moment';
 import React, { Fragment, useState } from 'react';
+import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import { useQuery } from 'react-apollo';
 import { withRouter } from 'react-router';
 
@@ -22,7 +23,18 @@ function Account() {
     }
   );
 
-  if (loading) return 'Loading...';
+  if (loading) {
+    return (
+      <SkeletonTheme color="#D3D3D3" highlightColor="#C0C0C0">
+        <div className="h3 pa2">
+          <Skeleton width="100%" height="100%"/>
+        </div>
+        <div className="h1 ph2">
+          <Skeleton width="100%" height="100%"/>
+        </div>
+      </SkeletonTheme>
+    );
+  };
 
   if (error) return `Error! ${error.message}`;
 
