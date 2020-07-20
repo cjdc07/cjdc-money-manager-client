@@ -23,7 +23,7 @@ function AccountForm({ account, close, onCompleted }) {
 
   useEffect(() => {
     setName(account ? account.name : '');
-    setBalance(account ? account.balance : '');
+    setBalance(account ? parseFloat(account.balance).toFixed(2) : '');
     setColor(account ? account.color : '');
   }, [account])
 

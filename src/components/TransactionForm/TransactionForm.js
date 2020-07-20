@@ -39,7 +39,7 @@ function TransactionForm({account, close, transaction, type, client}) {
       toInitialValue = 'Me';
     }
 
-    setAmount(transaction ? transaction.amount : '');
+    setAmount(transaction ? parseFloat(transaction.amount).toFixed(2) : '');
     setCategory(transaction ? transaction.category.value : '');
     setDescription(transaction ? transaction.description : '');
     setFrom(transaction ? transaction.from : fromInitialValue);
