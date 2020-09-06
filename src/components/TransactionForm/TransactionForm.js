@@ -6,7 +6,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks';
 
 import FormContainer from '../shared/FormContainer';
 import { CREATE_TRANSACTION, DELETE_TRANSACTION, UPDATE_TRANSACTION } from '../../resolvers/Mutation';
-import { ACCOUNTS_PER_PAGE, ORDER_BY_ASC, AUTH_TOKEN, TRANSACTION_TYPE } from '../../constants';
+import { ACCOUNTS_PER_PAGE, ORDER_BY_ASC, AUTH_TOKEN, TRANSACTION_TYPE, TRANSACTIONS_PER_PAGE } from '../../constants';
 import { FormInputCurrency, FormInputSelect, FormInputSelectCategory, FormInputText, FormInputTextArea } from '../shared/FormInputs';
 import { ACCOUNT_LIST, TRANSACTION_LIST, CATEGORY_LIST } from '../../resolvers/Query';
 import { withApollo } from 'react-apollo';
@@ -62,14 +62,14 @@ function TransactionForm({account, close, transaction, type, client}) {
           },
           {
             query: TRANSACTION_LIST,
-            variables: { type, account: account.id, filter: '', skip: 0, first: 0, orderBy: null },
+            variables: { type, account: account.id, skip: 0, first: TRANSACTIONS_PER_PAGE },
           },
         ];
 
         if (type === TRANSACTION_TYPE.TRANSFER) {
           queries.push({
             query: TRANSACTION_LIST,
-            variables: { type, account: createTransaction.to, filter: '', skip: 0, first: 0, orderBy: null },
+            variables: { type, account: createTransaction.to, skip: 0, first: TRANSACTIONS_PER_PAGE },
           });
         }
 
@@ -113,7 +113,7 @@ function TransactionForm({account, close, transaction, type, client}) {
           },
           {
             query: TRANSACTION_LIST,
-            variables: { type, account: account.id, filter: '', skip: 0, first: 0, orderBy: null },
+            variables: { type, account: account.id, skip: 0, first: TRANSACTIONS_PER_PAGE },
           },
         ];
 
@@ -123,10 +123,8 @@ function TransactionForm({account, close, transaction, type, client}) {
             variables: {
               type,
               account: account.id === deleteTransaction.to ? deleteTransaction.from : deleteTransaction.to,
-              filter: '',
               skip: 0,
-              first: 0,
-              orderBy: null
+              first: TRANSACTIONS_PER_PAGE,
             },
           });
         }
@@ -141,7 +139,7 @@ function TransactionForm({account, close, transaction, type, client}) {
   );
 
   const { loading, error, data } = useQuery(CATEGORY_LIST);
-  let {accountList: { accounts }} = client.cache.readQuery({
+  let {accounts: { accounts }} = client.cache.readQuery({
     query: ACCOUNT_LIST,
     variables: { filter: '', first: ACCOUNTS_PER_PAGE, skip: 0, orderBy: ORDER_BY_ASC }, // TODO: Use filter, skip, and orderBy
   });
@@ -242,7 +240,7 @@ function TransactionForm({account, close, transaction, type, client}) {
         value={category}
         onChange={category => setCategory(category)}
         label="Category"
-        data={data.categoryList.categories}
+        data={data.categories.categories}
         validator={validator.current}
       />
       {/* TODO: Don't allow negative values */}

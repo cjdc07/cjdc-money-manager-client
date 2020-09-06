@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 export const ACCOUNT_LIST = gql`
-  query AccountListQuery($filter: String, $skip: Int, $first: Int, $orderBy: AccountOrderByInput){
-    accountList(filter: $filter, first: $first, skip: $skip, orderBy: $orderBy) {
+  query AccountListQuery($skip: Int!, $first: Int!){
+    accounts(first: $first, skip: $skip) {
       accounts {
         id
         name
@@ -18,8 +18,8 @@ export const ACCOUNT_LIST = gql`
 `;
 
 export const TRANSACTION_LIST = gql`
-  query transactionList($filter: String, $account: ID!, $type: TransactionType, $skip: Int, $first: Int, $orderBy: TransactionOrderByInput){
-    transactionList(filter: $filter, account: $account, type: $type, skip: $skip, first: $first, orderBy: $orderBy) {
+  query transactionList($account: ID!, $type: TransactionType!, $skip: Int!, $first: Int!){
+    transactions( account: $account, type: $type, skip: $skip, first: $first) {
       transactions {
         count
         createdAt
@@ -46,7 +46,7 @@ export const TRANSACTION_LIST = gql`
 
 export const CATEGORY_LIST = gql`
   query categoryList {
-    categoryList {
+    categories {
       categories {
         id
         value

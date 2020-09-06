@@ -19,7 +19,7 @@ function Account() {
     ACCOUNT_LIST,
     {
       variables: { filter: '', first: ACCOUNTS_PER_PAGE, skip: 0, orderBy: ORDER_BY_ASC },
-      onCompleted: (data) => setAccount(data.accountList.accounts[0]),
+      onCompleted: (data) => setAccount(data.accounts.accounts[0]),
     }
   );
 
@@ -38,15 +38,15 @@ function Account() {
 
   if (error) return `Error! ${error.message}`;
 
-  if (data.accountList.accounts.length > 0 && data.accountList.accounts[0].id !== ACCOUNT_TOTAL_ID) {
+  if (data.accounts.accounts.length > 0 && data.accounts.accounts[0].id !== ACCOUNT_TOTAL_ID) {
     // Creates an account for summarizing all accounts
     updateQuery((data) => {
       const today = moment().format();
-      data.accountList.accounts.unshift({
+      data.accounts.accounts.unshift({
         __typename: 'Account',
         id: ACCOUNT_TOTAL_ID,
         name: 'All Accounts',
-        balance: data.accountList.total,
+        balance: data.accounts.total,
         color: 'black',
         updatedAt: today,
         createdAt: today,

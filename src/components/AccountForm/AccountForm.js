@@ -36,12 +36,12 @@ function AccountForm({ account, close, onCompleted }) {
           variables: { filter: '', first: ACCOUNTS_PER_PAGE, skip: 0, orderBy: ORDER_BY_ASC }
         });
 
-        data.accountList.accounts.push(createAccount);
-        data.accountList.total += createAccount.balance
-        data.accountList.count += 1;
+        data.accounts.accounts.push(createAccount);
+        data.accounts.total += createAccount.balance
+        data.accounts.count += 1;
         
-        if (data.accountList.accounts.length > 0 && data.accountList.accounts[0].id === ACCOUNT_TOTAL_ID) {
-          data.accountList.accounts[0].balance = data.accountList.total;
+        if (data.accounts.accounts.length > 0 && data.accounts.accounts[0].id === ACCOUNT_TOTAL_ID) {
+          data.accounts.accounts[0].balance = data.accounts.total;
         }
 
         cache.writeQuery({
@@ -67,10 +67,10 @@ function AccountForm({ account, close, onCompleted }) {
           variables: { filter: '', first: ACCOUNTS_PER_PAGE, skip: 0, orderBy: ORDER_BY_ASC }
         });
 
-        data.accountList.total = data.accountList.accounts.slice(1).reduce((total, account) => total += account.balance, 0);
+        data.accounts.total = data.accounts.accounts.slice(1).reduce((total, account) => total += account.balance, 0);
 
-        if (data.accountList.accounts.length > 0 && data.accountList.accounts[0].id === ACCOUNT_TOTAL_ID) {
-          data.accountList.accounts[0].balance = data.accountList.total;
+        if (data.accounts.accounts.length > 0 && data.accounts.accounts[0].id === ACCOUNT_TOTAL_ID) {
+          data.accounts.accounts[0].balance = data.accounts.total;
         }
 
         cache.writeQuery({
@@ -84,7 +84,7 @@ function AccountForm({ account, close, onCompleted }) {
       refetchQueries: ({ data: { updateAccount } }) => {
         return [{
           query: TRANSACTION_LIST,
-          variables: { account: updateAccount.id, filter: '', skip: 0, first: 0, type: TRANSACTION_TYPE.INCOME, orderBy: null },
+          variables: { account: updateAccount.id, skip: 0, first: ACCOUNTS_PER_PAGE, type: TRANSACTION_TYPE.INCOME },
         }];
       },
       onCompleted: () => {
@@ -103,20 +103,20 @@ function AccountForm({ account, close, onCompleted }) {
           variables: { filter: '', first: ACCOUNTS_PER_PAGE, skip: 0, orderBy: ORDER_BY_ASC }
         });
 
-        const index = data.accountList.accounts.indexOf(
-          data.accountList.accounts.find(account => account.id === deleteAccount.id)
+        const index = data.accounts.accounts.indexOf(
+          data.accounts.accounts.find(account => account.id === deleteAccount.id)
         );
 
-        data.accountList.accounts.splice(index, 1);
-        data.accountList.total -= deleteAccount.balance
-        data.accountList.count -= 1;
+        data.accounts.accounts.splice(index, 1);
+        data.accounts.total -= deleteAccount.balance
+        data.accounts.count -= 1;
 
-        if (data.accountList.accounts.length === 1 && data.accountList.accounts[0].id === ACCOUNT_TOTAL_ID) {
-          data.accountList.accounts = [];
+        if (data.accounts.accounts.length === 1 && data.accounts.accounts[0].id === ACCOUNT_TOTAL_ID) {
+          data.accounts.accounts = [];
         }
 
-        if (data.accountList.accounts.length > 0 && data.accountList.accounts[0].id === ACCOUNT_TOTAL_ID) {
-          data.accountList.accounts[0].balance = data.accountList.total;
+        if (data.accounts.accounts.length > 0 && data.accounts.accounts[0].id === ACCOUNT_TOTAL_ID) {
+          data.accounts.accounts[0].balance = data.accounts.total;
         }
 
         cache.writeQuery({
@@ -126,12 +126,12 @@ function AccountForm({ account, close, onCompleted }) {
         });
 
         // Will assign previous account as selected account
-        onCompleted(data.accountList.accounts[index-1]);
+        onCompleted(data.accounts.accounts[index-1]);
       },
       refetchQueries: ({ data: { deleteAccount } }) => {
         return [{
           query: TRANSACTION_LIST,
-          variables: { account: account.id, filter: '', skip: 0, first: 0, type: TRANSACTION_TYPE.INCOME, orderBy: null },
+          variables: { account: account.id, skip: 0, first: ACCOUNTS_PER_PAGE, type: TRANSACTION_TYPE.INCOME },
         }];
       },
       onCompleted: () => {

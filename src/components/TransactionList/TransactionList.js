@@ -8,7 +8,7 @@ import ActionSheet from '../ActionSheet/ActionSheet';
 import TransactionForm from '../TransactionForm/TransactionForm';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { TRANSACTION_LIST, ACCOUNT_LIST } from '../../resolvers/Query';
-import { TRANSACTION_TYPE, ACCOUNTS_PER_PAGE, ORDER_BY_ASC } from '../../constants';
+import { TRANSACTION_TYPE, ACCOUNTS_PER_PAGE, ORDER_BY_ASC, TRANSACTIONS_PER_PAGE } from '../../constants';
 import { currencyFormatter } from '../../utils';
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { useQuery } from 'react-apollo';
@@ -29,7 +29,7 @@ function TransactionList({ account, client, type }) {
   const { loading, error, data } = useQuery(
     TRANSACTION_LIST,
     {
-      variables: { type, account: account.id, filter: '', skip: 0, first: 0, orderBy: null }, // TODO: Use filter, skip, and orderBy
+      variables: { type, account: account.id, skip: 0, first: TRANSACTIONS_PER_PAGE },
     }
   );
 
@@ -46,11 +46,11 @@ function TransactionList({ account, client, type }) {
   }
   if (error) return `Error! ${error.message}`;
 
-  const { transactions } = data.transactionList;
+  const { transactions } = data.transactions;
 
-  let { accountList: { accounts } } = client.cache.readQuery({
+  let { accounts: { accounts } } = client.cache.readQuery({
     query: ACCOUNT_LIST,
-    variables: { filter: '', first: ACCOUNTS_PER_PAGE, skip: 0, orderBy: ORDER_BY_ASC }, // TODO: Use filter, skip, and orderBy
+    variables: { first: ACCOUNTS_PER_PAGE, skip: 0 },
   });
 
   return (

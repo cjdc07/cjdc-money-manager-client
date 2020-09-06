@@ -14,7 +14,7 @@ function AccountList({selected, onSelect, data}) {
   const [ showActionSheet, setShowActionSheet ] = useState(null);
 
   const getAccountsToRender = data => {
-    const accounts = data.accountList.accounts.slice();
+    const accounts = data.accounts.accounts.slice();
     // TODO: Sort by amount / createdAt / updatedAt
     return accounts;
   }
